@@ -3,29 +3,22 @@ import os
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
+# data loading
+df=pd.read_csv('train.csv',header=0,sep=',') 
+df = df.sample(frac=1).reset_index(drop=True)
+x_shape, y_shape = df.shape
+x_train = df.iloc[:,1:(y_shape-1)]
+y_train = df.iloc[:,y_shape-1]
 
-root = './a3a.t'
-path_train = root + 'train_set.npy'
-trainset = np.load(path_train).astype(np.float)
+df1=pd.read_csv('test.csv',header=0,sep=',') 
+df1 = df1.sample(frac=1).reset_index(drop=True)
+x_shape1, y_shape1 = df1.shape
+x_test = df.iloc[:,1:(y_shape1-1)]
+y_test = df.iloc[:,y_shape1-1]
 
-path_test = root + 'test_set.npy'
-testset = np.load(path_test).astype(np.float)
-
-label_train = [trainset[i][0] for i in range(trainset.shape[0])]
-data_train = [trainset[i][1:] for i in range(trainset.shape[0])]
-label_train = np.array(label_train)
-data_train = np.array(data_train)
-
-label_test = [testset[i][0] for i in range(testset.shape[0])]
-data_test = [testset[i][1:] for i in range(testset.shape[0])]
-label_test = np.array(label_test)
-data_test = np.array(data_test)
-
-# rescale the data, use the traditional train/test split
-X_train, X_test = data_train, data_test
-y_train, y_test = label_train, label_test
 
 
 cRange = [2, 4,6,8]
@@ -33,8 +26,8 @@ acc_list = []
 for c in cRange:
 
 	clf = SVC(kernel='linear', C=c)
-	clf.fit(X_train, label_train)
-	acc = clf.score(X_test, label_test)
+	clf.fit(x_train, y_train)
+	acc = clf.score(x_test, y_test)
 	print(c, acc)
 	acc_list.append(acc)
 	plt.figure()
@@ -47,9 +40,9 @@ acc_list = []
 for kernel in kernel_list:
 
 	clf = SVC(kernel=kernel, C=6)
-	clf.fit(X_train, label_train)
+	clf.fit(x_train, y_train)
 
-	acc = clf.score(X_test, label_test)
+	acc = clf.score(x_test, y_test)
 	print(kernel, acc)
 	acc_list.append(acc)
 	plt.figure()
